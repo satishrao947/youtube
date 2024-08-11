@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Login System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #message {
+            margin-top: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="loginContainer">
+    <h2>Login</h2>
+    <input type="text" id="loginUserId" placeholder="User ID">
+    <input type="password" id="loginPassword" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <button onclick="showRegister()">Register</button>
+    <button onclick="showForgotPassword()">Forgot Password</button>
+    <div id="message"></div>
+</div>
+
+<div class="container" id="registerContainer" style="display:none;">
+    <h2>Register</h2>
+    <input type="text" id="registerUserId" placeholder="User ID">
+    <input type="email" id="registerEmail" placeholder="Email">
+    <input type="password" id="registerPassword" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="showLogin()">Back to Login</button>
+    <div id="message"></div>
+</div>
+
+<div class="container" id="forgotContainer" style="display:none;">
+    <h2>Forgot Password</h2>
+    <input type="text" id="forgotUserId" placeholder="User ID">
+    <input type="email" id="forgotEmail" placeholder="Email">
+    <button onclick="resetPassword()">Reset Password</button>
+    <button onclick="showLogin()">Back to Login</button>
+    <div id="message"></div>
+</div>
+
+<script>
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+
+    function showLogin() {
+        document.getElementById('loginContainer').style.display = 'block';
+        document.getElementById('registerContainer').style.display = 'none';
+        document.getElementById('forgotContainer').style.display = 'none';
+        document.getElementById('message').innerText = '';
+    }
+
+    function showRegister() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('registerContainer').style.display = 'block';
+        document.getElementById('forgotContainer').style.display = 'none';
+        document.getElementById('message').innerText = '';
+    }
+
+    function showForgotPassword() {
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('registerContainer').style.display = 'none';
+        document.getElementById('forgotContainer').style.display = 'block';
+        document.getElementById('message').innerText = '';
+    }
+
+    function login() {
+        const userId = document.getElementById('loginUserId').value;
+        const password = document.getElementById('loginPassword').value;
+
+        const user = users.find(user => user.userId === userId && user.password === password);
+
+        if (user) {
+            alert('Login successful!');
+            document.getElementById('message').innerText = '';
+        } else {
+            document.getElementById('message').innerText = 'Invalid User ID or Password';
+        }
+    }
+
+    function register() {
+        const userId = document.getElementById('registerUserId').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+
+        if (users.find(user => user.userId === userId)) {
+            document.getElementById('message').innerText = 'User ID already exists';
+        } else {
+            users.push({ userId, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Registration successful!');
+            showLogin();
+        }
+    }
+
+    function resetPassword() {
+        const userId = document.getElementById('forgotUserId').value;
+        const email = document.getElementById('forgotEmail').value;
+
+        const user = users.find(user => user.userId === userId && user.email === email);
+
+        if (user) {
+            const newPassword = prompt('Enter your new password:');
+            if (newPassword) {
+                user.password = newPassword;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('Password reset successful!');
+                showLogin();
+            }
+        } else {
+            document.getElementById('message').innerText = 'User ID or Email not found';
+        }
+    }
+</script>
+
+</body>
+</html>
